@@ -2,11 +2,11 @@
 '#CBINT
 '#_Mat _0
 IsExist("8PX.hzk")->Theta
-{8,Theta}->Dim Mat A.P
+{8,8}->Dim Mat A.P
 32->O
 
-"LunarReader V1.2.1"
-"Code:Stephen"
+"LunarReader V1.3.0"
+"Code:Sophia"
 "by NWater"
 "This software is free software,licensed under GPLv3 or later"Disps
 "Visit http:////github.com//nwater23//LunarReader for more info"
@@ -20,7 +20,7 @@ Else "File dose not exist"
  Stop
 IfEnd
 
-Load("8PX.hzk")->Mat A
+'_Load(_"8PX.hzk")->Mat A
 Cls
 CoordOff:GridOff:AxesOff:LabelOff
 _ClrVram
@@ -89,28 +89,12 @@ Do
    Break
   Case 37
    Locate @1,8,"_#E6AD_"
-   0->X
-   0->Y
-   R->S
-   While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R+1<Dim List 1
-    Gosub G,List 1[Q+R],List 1[Q+R+1]
-    If Ans
-     Then 8+X->X
-    Else 6+X->X
-     If X>=128 Or List 1[Q+R]=0X0A
-      Then 0->X
-      8+Y->Y
-     IfEnd
-    IfEnd
-    1+R->R
-   WhileEnd
-   If Q+R+2>=Dim List 1
-    Then Load(Str 1,P+Q+S)->List 1
-    P+Q+S->P
-    0->Q
-   Else Q+S->Q
-   IfEnd
-   Break
+   Load(Str 1,P+Q+R)->List 1
+   P+Q+R->P
+   0->Q
+  Else Q+S->Q
+  IfEnd
+  Break
   Case 28
    Locate @1,8,"_#E6AC_"
    0->X
@@ -174,8 +158,8 @@ b-0X00A1->b
 94a+b->c
 '_Hex(_c)
 Screen.G
-'__ClrVram_
-DotPut(Mat A[0,8c+O],X,Y,X+7,Y+7)
+Load("8PX.hzk",8c+O)->Mat A
+DotPut(Mat A,X,Y,X+7,Y+7)
 '_ACBreak_
 Return 
 
