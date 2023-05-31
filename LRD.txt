@@ -5,11 +5,9 @@ IsExist("8PX.hzk")->Theta
 {8,8}->Dim Mat A.P
 32->O
 
-"LunarReader V1.3.0"
-"Code:Sophia"
+"LunarReader V1.4.4"
+"Code:Sunloar"
 "by NWater"
-"This software is free software,licensed under GPLv3 or later"Disps
-"Visit http:////github.com//nwater23//LunarReader for more info"
 "ENTER FILE PATH:"
 FkeyMenu(6,"//",I)
 "C://"?()->Str 1
@@ -39,7 +37,7 @@ Do
  0->R
  Gosub C
  Locate @1,8,"_#E6A8_"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%"+" +"+Hex(O),R
- While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R+1<Dim List 1
+ While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R>=0 And Q+R+1<Dim List 1
   MOD(List 1[Q+R],0X100)->a
   MOD(List 1[Q+R+1],0X100)->b
   Gosub G,a,b
@@ -79,48 +77,70 @@ Do
   Locate @1,8,"_#E6A8_"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%"+" +"+Hex(O),R
  WhileEnd
  If Y<64-8
-  Then _Rectangle 0,Y,127,64-8-1,0,0,0
+  Then _Rectangle 0,Y,127,64-8-1,0,0,3
  IfEnd
  Lbl K
  Locate @1,8,"#"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%"+" +"+Hex(O),R
  Switch Getkey1
   Case 47
+   "This software is free software,licensed under GPLv3 or later."
+   "Visit <http:////github.com//nwater23//LunarReader> for more info and updates."
+   
    Stop
    Break
   Case 37
    Locate @1,8,"_#E6AD_"
-   Load(Str 1,P+Q+R)->List 1
-   P+Q+R->P
-   0->Q
+   If Q+R+1+(128/6)(64/8-1)>=Dim List 1
+    Load(Str 1,P+Q+R)->List 1
+    P+Q+R->P
+    0->Q
+   Else Q+R->Q
+   IfEnd
   Else Q+S->Q
   IfEnd
   Break
   Case 28
    Locate @1,8,"_#E6AC_"
+   If Q+R-1-(128/6)(64/8-1)<0
+    If P+Q+R-1-(128/6)(64/8-1)<0
+     Then 0->P
+     0->Q
+     0->R
+     Load(Str 1)->List 1
+    Else 
+     Load(Str 1,P+Q+R-1-(128/6)(64/8-1))->List 1
+     P+Q+R-1-(128/6)(64/8-1)->P
+     1-Q-R+(128/6)(64/8-1)->Q
+     0->R
+    IfEnd
+   IfEnd
    0->X
    0->Y
-   R->S
-   While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R>=0
-    Gosub G,List 1[Q+R],List 1[Q+R+1]
+   While X>=0 And X<128 And Y>=0 And Y<64-8 And Q-R>=1 And P+Q+R>0
+    Gosub G,List 1[Q-R],List 1[Q-R-1]
     If Ans
      Then 8+X->X
+     2+R->R
     Else 6+X->X
-     If X>=128 Or List 1[Q+R]=0X0A
+     If List 1[Q-R]=0X0A
       Then 0->X
       8+Y->Y
      IfEnd
+     1+R->R
     IfEnd
-    (-)1+R->R
+    If X>=128
+     Then 0->X
+     8+Y->Y
+    IfEnd
    WhileEnd
-   If P+Q+R-(128/6)(64/8-1)<0
-    Then Load(Str 1,0)->List 1
-    0->P
+   Q-R->Q
+   If Q<0
+    Then 'P+Q_->_P
     0->Q
-   ElseIf Q+R-2<=0
-    Then Load(Str 1,P+Q+R-(128/6)(64/8-1))->List 1
-    P+Q+R->P
-    0->Q
-   Else Q+S->Q
+    '_If _P<0
+     '_Then _0_->_P
+     '_IfEnd_
+    '_Load(__Str _1,P)_->__List _1
    IfEnd
    Break
   Case 27
