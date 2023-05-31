@@ -1,0 +1,130 @@
+'ProgramMode:RUN
+'#CBINT
+'#_Mat _0
+IsExist("8PX.hzk")->Theta
+{8,Theta}->Dim Mat A.P
+
+"LunarReader V1.0.0"
+"Code:Unstable"
+"by NWater"
+"ENTER FILE PATH:"
+FkeyMenu(6,"//",I)
+'"C://"?()->Str 1
+
+"wolfram.py"->Str 1
+"TXT//douh4.txt"->Str 1
+IsExist(Str 1)Disps
+
+If IsExist(Str 1)
+ Then IsExist(Str 1)-><r>
+Else "File dose not exist"
+ Stop
+IfEnd
+
+Cls
+CoordOff:GridOff:AxesOff:LabelOff
+_ClrVram
+
+0->P'FILE SEEK POINT
+0->Q'TMP POINT
+(128/4)*(64/8)*4->Dim List 1.B
+Load(Str 1,P)->List 1
+0->X
+0->Y
+Do
+ Locate @1,8,"#"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%",R
+ 0->R
+ While X>=0 And X<128 And Y>=0 And Y<64-8
+  Gosub G,List 1[Q+R],List 1[Q+R+1]
+  Ans->K
+  If K
+   Then 0X100*List 1[Q+R]+List 1[Q+R+1] And R<Dim List 1->C
+   If 128-X<8
+    Then 0->X
+    Y+8->Y
+   IfEnd
+   If Y<(64-8)
+    Then Gosub D,C,X,Y
+    8+X->X
+    2+R->R
+   IfEnd
+  Else 
+   If 128-X<6 Or List 1[Q+R]=0X0A'0X0D=LF '0X0A=CR
+    Then 0->X
+    Y+8->Y
+   IfEnd
+   If List 1[Q+R]=0X0A
+    Then 1+R->R
+   ElseIf Y<(64-8)
+    Then (X Int/ 4+1)
+    Locate @1+X/6,1+Y/8,StrChar(List 1[Q+R],1)
+    6+X->X
+    1+R->R
+   IfEnd
+  IfEnd
+ WhileEnd
+ Lbl K
+ Switch Getkey1
+  Case 37
+   Locate @1,8,"_#E6AD_"
+   Gosub P,1
+   Break
+  Case 28
+   Locate @1,8,"_#E6AC_"
+   Gosub P,(-)1
+   Break
+  Default Goto K
+ SwitchEnd
+ '_Stop_
+LpWhile 1
+
+Lbl G
+Local a,b
+If a>=0XA1 And a<0XFF And b>=0XA1 And b<0XFF
+ Then Return 1
+Else Return 0
+IfEnd
+
+Lbl D
+Local c,x,y
+94(c Int/ 0X100)+MOD(c,0X100)->c
+DotPut(Mat A[0,c],7,7,1+x,1+y)
+Return 
+
+Lbl P
+Local r
+Q+(128/4)*(64/8-1)r->Q
+P+Q->P
+0->Q
+If P<0
+ Then 0->P
+IfEnd
+If P>=<r>
+ Then <r>-(128/4)(64/8-1)->P
+ <r>-1->Q
+Else 
+ If r<0
+  Then (128/4)(64/8-1)-1->Q
+ IfEnd
+IfEnd
+0->c
+0->x
+0->y
+While Q>=0 And Q+1<Dim List 1 And x>=0 And x<128 And y>=0 And y<64-8
+ List 1[Q]->a
+ List 1[Q+1]->b
+ Gosub G,a,b
+ If Ans
+  Then 8+x->x
+ Else 4+x->x
+ IfEnd
+ If x>=128
+  Then 0->x
+  1+y->y
+  If y>=64-8
+   Then Return Q
+  IfEnd
+ IfEnd
+ 1+Q->Q
+WhileEnd
+Return Q
