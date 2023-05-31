@@ -5,7 +5,7 @@ IsExist("8PX.hzk")->Theta
 {8,8}->Dim Mat A.P
 32->O
 
-"LunarReader V1.4.4"
+"LunarReader V1.4.8"
 "Code:Sunloar"
 "by NWater"
 "ENTER FILE PATH:"
@@ -36,7 +36,7 @@ Do
  0->Y
  0->R
  Gosub C
- Locate @1,8,"_#E6A8_"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%"+" +"+Hex(O),R
+ Gosub S,StrAsc("_#E6A8_")
  While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R>=0 And Q+R+1<Dim List 1
   MOD(List 1[Q+R],0X100)->a
   MOD(List 1[Q+R+1],0X100)->b
@@ -74,13 +74,19 @@ Do
    Y+8->Y
    Gosub C
   IfEnd
-  Locate @1,8,"_#E6A8_"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%"+" +"+Hex(O),R
+  Gosub S,StrAsc("_#E6A8_")
  WhileEnd
  If Y<64-8
   Then _Rectangle 0,Y,127,64-8-1,0,0,3
  IfEnd
  Lbl K
- Locate @1,8,"#"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%"+" +"+Hex(O),R
+ If K<>(-)1
+  Then _Rectangle 0,64-8,127,63,0,0,1
+  LocateYX @64-7,1,"#"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"% +"+Hex(O),R
+  1->K
+ Else 
+  0->K
+ IfEnd
  Switch Getkey1
   Case 47
    "This software is free software,licensed under GPLv3 or later."
@@ -89,7 +95,7 @@ Do
    Stop
    Break
   Case 37
-   Locate @1,8,"_#E6AD_"
+   Gosub S,StrAsc("_#E6AD_")
    If Q+R+1+(128/6)(64/8-1)>=Dim List 1
     Load(Str 1,P+Q+R)->List 1
     P+Q+R->P
@@ -100,7 +106,7 @@ Do
   IfEnd
   Break
   Case 28
-   Locate @1,8,"_#E6AC_"
+   Gosub S,StrAsc("_#E6AC_")
    If Q+R-1-(128/6)(64/8-1)<0
     If P+Q+R-1-(128/6)(64/8-1)<0
      Then 0->P
@@ -150,8 +156,17 @@ Do
    (-)1+O->O
    Break
   Case 79
+   Gosub S,StrAsc("_#E697_")
    Gosub J
    Break
+  Case 78
+   FkeyMenu(1,"JUMP")
+   FkeyMenu(2,"SRC")
+   FkeyMenu(3,"MARK")
+   FkeyMenu(4,"TOC")
+   (-)K->K
+   FkeyMenu(5,"",C)
+   FkeyMenu(6,"INFO")
   Default Goto K
  SwitchEnd
  '_Stop_
@@ -222,3 +237,9 @@ While K
  IfEnd
 WhileEnd
 Return T
+
+Lbl S
+Local s
+_Rectangle 0,64-7,127,63,0,0,1
+LocateYX @64-7,0,StrChar(s,1)+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"% +"+Hex(O),R
+Return 
