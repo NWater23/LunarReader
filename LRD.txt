@@ -2,10 +2,10 @@
 '#CBINT
 '#_Mat _0
 IsExist("8PX.hzk")->Theta
-{8,8}->Dim Mat A.P
+{8,Theta}->Dim Mat A.P
 32->O
 
-"LunarReader V1.4.8"
+"LunarReader V1.4.9"
 "Code:Sunloar"
 "by NWater"
 "ENTER FILE PATH:"
@@ -18,7 +18,7 @@ Else "File dose not exist"
  Stop
 IfEnd
 
-'_Load(_"8PX.hzk")->Mat A
+Load("8PX.hzk")->Mat A
 Cls
 CoordOff:GridOff:AxesOff:LabelOff
 _ClrVram
@@ -35,6 +35,7 @@ Do
  0->X
  0->Y
  0->R
+ Lbl R
  Gosub C
  Gosub S,StrAsc("_#E6A8_")
  While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R>=0 And Q+R+1<Dim List 1
@@ -78,6 +79,9 @@ Do
  WhileEnd
  If Y<64-8
   Then _Rectangle 0,Y,127,64-8-1,0,0,3
+  Load(Str 1,P+Q)->List 1
+  0->Q
+  Goto R
  IfEnd
  Lbl K
  If K<>(-)1
@@ -193,8 +197,14 @@ b-0X00A1->b
 94a+b->c
 '_Hex(_c)
 Screen.G
-Load("8PX.hzk",8c+O)->Mat A
-DotPut(Mat A,X,Y,X+7,Y+7)
+'_Load(_"8PX.hzk",8c+O)->Mat A
+'_DotPut(__Mat _A[0,8c+O],X,Y,X+7,Y+7)
+
+If 8c+O<Theta
+ Then DotPut(Mat A[0,8c+O],X,Y,X+7,Y+7)
+Else '_LocateYX _Y,X,"_@00D8_"
+ _Rectangle X,Y,X+7,Y+7,0,0,3
+IfEnd
 '_ACBreak_
 Return 
 
