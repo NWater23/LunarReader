@@ -3,17 +3,16 @@
 '#_Mat _0
 IsExist("8PX.hzk")->Theta
 {8,Theta}->Dim Mat A.P
+32->O
 
-"LunarReader V1.0.0"
-"Code:Unstable"
+"LunarReader V1.2.1"
+"Code:Stephen"
 "by NWater"
+"This software is free software,licensed under GPLv3 or later"Disps
+"Visit http:////github.com//nwater23//LunarReader for more info"
 "ENTER FILE PATH:"
 FkeyMenu(6,"//",I)
-'"C://"?()->Str 1
-
-"wolfram.py"->Str 1
-"TXT//douh4.txt"->Str 1
-IsExist(Str 1)Disps
+"C://"?()->Str 1
 
 If IsExist(Str 1)
  Then IsExist(Str 1)-><r>
@@ -21,6 +20,7 @@ Else "File dose not exist"
  Stop
 IfEnd
 
+Load("8PX.hzk")->Mat A
 Cls
 CoordOff:GridOff:AxesOff:LabelOff
 _ClrVram
@@ -29,102 +29,192 @@ _ClrVram
 0->Q'TMP POINT
 (128/4)*(64/8)*4->Dim List 1.B
 Load(Str 1,P)->List 1
-0->X
-0->Y
 Do
- Locate @1,8,"#"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%",R
+ If P+Q>=<r>
+  Then <r>-P->Q
+ IfEnd
+ '__ClrVram_
+ 0->X
+ 0->Y
  0->R
- While X>=0 And X<128 And Y>=0 And Y<64-8
-  Gosub G,List 1[Q+R],List 1[Q+R+1]
+ Gosub C
+ Locate @1,8,"_#E6A8_"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%"+" +"+Hex(O),R
+ While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R+1<Dim List 1
+  MOD(List 1[Q+R],0X100)->a
+  MOD(List 1[Q+R+1],0X100)->b
+  Gosub G,a,b
   Ans->K
   If K
-   Then 0X100*List 1[Q+R]+List 1[Q+R+1] And R<Dim List 1->C
-   If 128-X<8
+   Then 0X0100*a+b->C
+   If X+8>128
     Then 0->X
     Y+8->Y
+    Gosub C
    IfEnd
-   If Y<(64-8)
-    Then Gosub D,C,X,Y
+   If Y<(63-8)
+    Then Gosub D,a,b,X,Y
     8+X->X
     2+R->R
    IfEnd
   Else 
-   If 128-X<6 Or List 1[Q+R]=0X0A'0X0D=LF '0X0A=CR
+   If X+6>128 Or List 1[Q+R]=0X0A'0X0D=LF '0X0A=CR
     Then 0->X
     Y+8->Y
+    Gosub C
    IfEnd
    If List 1[Q+R]=0X0A
     Then 1+R->R
-   ElseIf Y<(64-8)
+   ElseIf Y<(63-8)
     Then (X Int/ 4+1)
-    Locate @1+X/6,1+Y/8,StrChar(List 1[Q+R],1)
+    LocateYX @Y,X,StrChar(List 1[Q+R],1)
     6+X->X
     1+R->R
    IfEnd
   IfEnd
+  If X=128
+   Then 0->X
+   Y+8->Y
+   Gosub C
+  IfEnd
+  Locate @1,8,"_#E6A8_"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%"+" +"+Hex(O),R
  WhileEnd
+ If Y<64-8
+  Then _Rectangle 0,Y,127,64-8-1,0,0,0
+ IfEnd
  Lbl K
+ Locate @1,8,"#"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"%"+" +"+Hex(O),R
  Switch Getkey1
+  Case 47
+   Stop
+   Break
   Case 37
    Locate @1,8,"_#E6AD_"
-   Gosub P,1
+   0->X
+   0->Y
+   R->S
+   While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R+1<Dim List 1
+    Gosub G,List 1[Q+R],List 1[Q+R+1]
+    If Ans
+     Then 8+X->X
+    Else 6+X->X
+     If X>=128 Or List 1[Q+R]=0X0A
+      Then 0->X
+      8+Y->Y
+     IfEnd
+    IfEnd
+    1+R->R
+   WhileEnd
+   If Q+R+2>=Dim List 1
+    Then Load(Str 1,P+Q+S)->List 1
+    P+Q+S->P
+    0->Q
+   Else Q+S->Q
+   IfEnd
    Break
   Case 28
    Locate @1,8,"_#E6AC_"
-   Gosub P,(-)1
+   0->X
+   0->Y
+   R->S
+   While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R>=0
+    Gosub G,List 1[Q+R],List 1[Q+R+1]
+    If Ans
+     Then 8+X->X
+    Else 6+X->X
+     If X>=128 Or List 1[Q+R]=0X0A
+      Then 0->X
+      8+Y->Y
+     IfEnd
+    IfEnd
+    (-)1+R->R
+   WhileEnd
+   If P+Q+R-(128/6)(64/8-1)<0
+    Then Load(Str 1,0)->List 1
+    0->P
+    0->Q
+   ElseIf Q+R-2<=0
+    Then Load(Str 1,P+Q+R-(128/6)(64/8-1))->List 1
+    P+Q+R->P
+    0->Q
+   Else Q+S->Q
+   IfEnd
+   Break
+  Case 27
+   1+O->O
+   Break
+  Case 38
+   (-)1+O->O
+   Break
+  Case 79
+   Gosub J
    Break
   Default Goto K
  SwitchEnd
  '_Stop_
 LpWhile 1
 
+Lbl C
+_Rectangle 0,Y,127,Y+7,0,0,0
+_Rectangle 0,64-8,127,63,0,0,1
+Return 
+
 Lbl G
 Local a,b
-If a>=0XA1 And a<0XFF And b>=0XA1 And b<0XFF
+If MOD(a,0X100)>=0XA1 And MOD(a,0X100)<0XFF And MOD(b,0X100)>=0XA1 And MOD(b,0X100)<0XFF
  Then Return 1
 Else Return 0
 IfEnd
 
 Lbl D
-Local c,x,y
-94(c Int/ 0X100)+MOD(c,0X100)->c
-DotPut(Mat A[0,c],7,7,1+x,1+y)
+Local a,b,x,y
+'"WORD "+Hex(a)+Hex(b)
+a-0X00A1->a
+b-0X00A1->b
+'_ToStr(_a)+"-"+ToStr(b)
+94a+b->c
+'_Hex(_c)
+Screen.G
+'__ClrVram_
+DotPut(Mat A[0,8c+O],X,Y,X+7,Y+7)
+'_ACBreak_
 Return 
 
-Lbl P
-Local r
-Q+(128/4)*(64/8-1)r->Q
-P+Q->P
-0->Q
-If P<0
- Then 0->P
-IfEnd
-If P>=<r>
- Then <r>-(128/4)(64/8-1)->P
- <r>-1->Q
-Else 
- If r<0
-  Then (128/4)(64/8-1)-1->Q
- IfEnd
-IfEnd
-0->c
-0->x
-0->y
-While Q>=0 And Q+1<Dim List 1 And x>=0 And x<128 And y>=0 And y<64-8
- List 1[Q]->a
- List 1[Q+1]->b
- Gosub G,a,b
- If Ans
-  Then 8+x->x
- Else 4+x->x
- IfEnd
- If x>=128
-  Then 0->x
-  1+y->y
-  If y>=64-8
-   Then Return Q
+Lbl J
+1->K
+0->T
+While K
+ _Rectangle 8,7,120,26,1,1,0
+ LocateYX @9,9,"JUMP TO"
+ LocateYX @17,9,"#"+Hex(T)
+ Getkey1->K
+ K=71=>16T->T
+ K=72=>16T+1->T
+ K=62=>16T+2->T
+ K=52=>16T+3->T
+ K=73=>16T+4->T
+ K=63=>16T+5->T
+ K=53=>16T+6->T
+ K=74=>16T+7->T
+ K=64=>16T+8->T
+ K=54=>16T+9->T
+ K=76=>16T+10->T
+ K=66=>16T+11->T
+ K=56=>16T+12->T
+ K=46=>16T+13->T
+ K=36=>16T+14->T
+ K=26=>16T+15->T
+ K=47=>0->K
+ If K=31
+  If T<0
+   Then 0->T
   IfEnd
+  If T>=<r>
+   Then <r>-1->T
+  IfEnd
+  T->P
+  0->Q
+  Load(Str 1,P)->List 1
+  0->K
  IfEnd
- 1+Q->Q
 WhileEnd
-Return Q
+Return T
