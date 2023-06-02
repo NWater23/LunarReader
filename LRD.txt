@@ -4,9 +4,10 @@
 IsExist("8PX.hzk")->Theta
 {8,Theta}->Dim Mat A.P
 32->O
-
-"LunarReader V1.4.12"
-"Code:Sunloar"
+1024->Dim List 3.L
+(-)1->List 3[0]
+"LunarReader V1.5.2"
+"Code:XChar-Ray"
 "by NWater"
 "ENTER FILE PATH:"
 FkeyMenu(6,"//",I)
@@ -57,7 +58,7 @@ Do
     2+R->R
    IfEnd
   Else 
-   If X+6>128 Or List 1[Q+R]=0X0A'0X0D=LF '0X0A=CR
+   If X+6>128 Or List 1[Q+R]=0X0A'0X0A=LF '0X0D=CR
     Then 0->X
     Y+8->Y
     Gosub C
@@ -167,6 +168,14 @@ Do
    Gosub S,StrAsc("_#E697_")
    Gosub J
    Break
+  Case 49
+   Gosub T
+   If Ans>=0
+    Then Ans->P
+    0->Q
+    Load(Str 1,P)->List 1
+   IfEnd
+   Break
   Case 78
    FkeyMenu(1,"JUMP")
    FkeyMenu(2,"SRC")
@@ -207,9 +216,12 @@ IfEnd
 
 Lbl D
 Local a,b,x,y
+X->x
+Y->y
+'x<0_ Or _x+7_>=_128_ Or _y<0_ Or _y+7_>=_64_=>__Return _
 '"WORD "+Hex(a)+Hex(b)
-a-0X00A1->a
-b-0X00A1->b
+a>=0XA1=>MOD(a-0X00A1,0X7F)->a
+b>=0XA1=>MOD(b-0X00A1,0X7F)->b
 '_ToStr(_a)+"-"+ToStr(b)
 94a+b->c
 '_Hex(_c)
@@ -218,9 +230,9 @@ Screen.G
 '_DotPut(__Mat _A[0,8c+O],X,Y,X+7,Y+7)
 
 If 8c+O<Theta
- Then DotPut(Mat A[0,8c+O],X,Y,X+7,Y+7)
-Else '_LocateYX _Y,X,"_@00D8_"
- _Rectangle X,Y,X+7,Y+7,0,0,3
+ Then DotPut(Mat A[0,8c+O],x,y,x+7,y+7)
+Else '_LocateYX _y,x,"_@00D8_"
+ _Rectangle x,y,x+7,y+7,0,0,3
 IfEnd
 '_ACBreak_
 Return 
@@ -249,6 +261,7 @@ While K
  K=46=>16T+13->T
  K=36=>16T+14->T
  K=26=>16T+15->T
+ K=44=>T/16->T
  K=47=>0->K
  If K=31
   If T<0
@@ -264,6 +277,94 @@ While K
  IfEnd
 WhileEnd
 Return T
+
+Lbl T
+If (-)1=List 3[0]
+ Then 0->List 3[0]
+ 0->J
+ 1->I
+ _Rectangle 7,8,120,40,1,1,0
+ LocateYX @12,9,"GENERATING TOC"
+ LocateYX @20,9,"PLEASE WAIT..."
+ While I<<r> And J<Dim List 3-1
+  LocateYX @28,9,Hex(I)+"//"+Hex(<r>)
+  Load(Str 1,I)->List 1
+  StrSrc($List 1,StrChar(0X0A,1))->K
+  If K>=0
+   Then 
+   If K>Dim List 1-(64/4)
+    Then I+K-1->I
+   Else MOD(List 1[K+1],0X100)->B
+    0->X
+    B=0XA0+21 And List 1[K+2]=0XA0+58=>1->X'Nth
+    B=StrAsc("[")=>1->X
+    B=StrAsc("**")=>1->X
+    B=StrAsc("#")=>1->X
+    B=StrAsc("Char-")=>1->X
+    B>=StrAsc("0") And B<=StrAsc("9")=>1->X
+    If X
+     Then 
+     1+J->J
+     I+K+1->List 3[J]
+     I+K+2->I
+    Else I+K+1->I
+    IfEnd
+   IfEnd
+  Else Dim List 1+I->I
+  IfEnd
+ WhileEnd
+IfEnd
+0->I
+0->J
+(-)1->A
+While A=(-)1
+ If J<0
+  Then 0->J
+  I-1->I
+ IfEnd
+ If J>=(64/8-1)
+  Then (64/8-2)->J
+  I+1->I
+ IfEnd
+ MOD(I,Dim List 3)->I
+ (64)->Dim List 2.B
+ For 0->K To (64/8-2)
+  _Rectangle 0,8K,127,8K+7,0,0,0
+  I+K>=Dim List 3=>Next
+ Text @8K,0,Hex(List 3[I+K])
+ Load(Str 1,List 3[I+K])->List 2
+ 4*7->X
+ For 0->L To Dim List 2-2
+  X+7>=128=>Next
+ 
+ MOD(List 2[L],0X100)->a
+ MOD(List 2[L+1],0X100)->b
+ Gosub G,a,b
+ If Ans
+  Then 8K->Y
+  Gosub D,a,b,X,8K
+  8+X->X
+  1+L->L
+ Else LocateYX @8K,X,StrChar(List 2[L],1)
+  6+X->X
+ IfEnd
+ X+7>=128=>Dim List 3->L
+Next
+J=K=>_Rectangle 0,8K,127,8K+7,0,0,2
+Next
+ClrList 2
+Getkey1->K
+K=28=>J-1->J
+K=37=>J+1->J
+K=38=>0->I~J
+K=31=>I+J->A
+K=47=>(-)2->A
+WhileEnd
+Load(Str 1,P)->List 1
+If A>=0
+ Then Return List 3[A]
+Else Return (-)1
+IfEnd
 
 Lbl S
 Local s
