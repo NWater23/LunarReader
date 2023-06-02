@@ -5,7 +5,7 @@ IsExist("8PX.hzk")->Theta
 {8,Theta}->Dim Mat A.P
 32->O
 
-"LunarReader V1.4.9"
+"LunarReader V1.4.11"
 "Code:Sunloar"
 "by NWater"
 "ENTER FILE PATH:"
@@ -23,7 +23,7 @@ Cls
 CoordOff:GridOff:AxesOff:LabelOff
 _ClrVram
 
-0->P'FILE SEEK POINT
+P<0 Or P>=<r>=>0->P'FILE SEEK POINT
 0->Q'TMP POINT
 (128/4)*(64/8)*4->Dim List 1.B
 Load(Str 1,P)->List 1
@@ -35,10 +35,11 @@ Do
  0->X
  0->Y
  0->R
- Lbl R
  Gosub C
+ Lbl R
+ P+Q->S
  Gosub S,StrAsc("_#E6A8_")
- While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R>=0 And Q+R+1<Dim List 1
+ While X>=0 And X<128 And Y>=0 And Y<64-8 And Q+R>=0 And Q+R+1<Dim List 1 And P+Q+R<<r>
   MOD(List 1[Q+R],0X100)->a
   MOD(List 1[Q+R+1],0X100)->b
   Gosub G,a,b
@@ -75,28 +76,30 @@ Do
    Y+8->Y
    Gosub C
   IfEnd
-  Gosub S,StrAsc("_#E6A8_")
+  '_Gosub _S,_StrAsc(_"_#E6A8_")
  WhileEnd
  If Y<64-8
-  Then _Rectangle 0,Y,127,64-8-1,0,0,3
-  Load(Str 1,P+Q)->List 1
-  0->Q
-  Goto R
+  Then 
+  If P+Q+R>=<r>
+   Then _Rectangle 0,Y,127,64-8,0,0,3
+  Else 
+   P+Q->P
+   Load(Str 1,P)->List 1
+   0->Q
+   X>=128=>0->X
+   Goto R
+  IfEnd
  IfEnd
  Lbl K
  If K<>(-)1
-  Then _Rectangle 0,64-8,127,63,0,0,1
-  LocateYX @64-7,1,"#"+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"% +"+Hex(O),R
+  Then Gosub S,StrAsc("#")
   1->K
  Else 
   0->K
  IfEnd
  Switch Getkey1
   Case 47
-   "This software is free software,licensed under GPLv3 or later."
-   "Visit <http:////github.com//nwater23//LunarReader> for more info and updates."
-   
-   Stop
+   Goto X
    Break
   Case 37
    Gosub S,StrAsc("_#E6AD_")
@@ -106,28 +109,26 @@ Do
     0->Q
    Else Q+R->Q
    IfEnd
-  Else Q+S->Q
-  IfEnd
-  Break
+   Break
   Case 28
    Gosub S,StrAsc("_#E6AC_")
-   If Q+R-1-(128/6)(64/8-1)<0
-    If P+Q+R-1-(128/6)(64/8-1)<0
+   If Q+R-1-(128/4)(64/8-1)<0
+    If P+Q+R-1-(128/4)(64/8-1)<0
      Then 0->P
      0->Q
      0->R
      Load(Str 1)->List 1
     Else 
-     Load(Str 1,P+Q+R-1-(128/6)(64/8-1))->List 1
-     P+Q+R-1-(128/6)(64/8-1)->P
-     1-Q-R+(128/6)(64/8-1)->Q
+     P+Q+R-1-(128/4)(64/8-1)->P
+     Load(Str 1,P)->List 1
+     Q+R+(128/4)(64/8-1)->Q
      0->R
     IfEnd
-   IfEnd
+   IfEnd'
    0->X
    0->Y
-   While X>=0 And X<128 And Y>=0 And Y<64-8 And Q-R>=1 And P+Q+R>0
-    Gosub G,List 1[Q-R],List 1[Q-R-1]
+   While X>=0 And X<128 And Y>=0 And Y<64-8 And Q-R>=1 And P+Q-R>0
+    Gosub G,List 1[Q-R-1],List 1[Q-R]
     If Ans
      Then 8+X->X
      2+R->R
@@ -152,12 +153,15 @@ Do
      '_IfEnd_
     '_Load(__Str _1,P)_->__List _1
    IfEnd
+   P+Q>=S=>0->Q
    Break
   Case 27
-   1+O->O
+   1+Q->Q
+   Q>=Dim List 1=>Dim List 1-1->Q
    Break
   Case 38
-   (-)1+O->O
+   (-)1+Q->Q
+   Q<0=>0->Q
    Break
   Case 79
    Gosub S,StrAsc("_#E697_")
@@ -176,9 +180,18 @@ Do
  '_Stop_
 LpWhile 1
 
+Lbl X
+P+Q->P
+ClrText
+FkeyMenu(1~6,"LunarReader by NWater")
+"This software is free software,licensed under GPLv3 or later."
+"Visit <http:////github.com//nwater23//LunarReader> for more info and updates."
+Stop
+Return 
+
 Lbl C
 _Rectangle 0,Y,127,Y+7,0,0,0
-_Rectangle 0,64-8,127,63,0,0,1
+'__Rectangle _0,64-8,127,63,0,0,1
 Return 
 
 Lbl G
@@ -251,5 +264,9 @@ Return T
 Lbl S
 Local s
 _Rectangle 0,64-7,127,63,0,0,1
-LocateYX @64-7,0,StrChar(s,1)+Hex(P+Q)+"//"+Hex(<r>)+" "+ToStr(100(P+Q)/<r>)+"% +"+Hex(O),R
+StrChar(s,1)+Hex(P+Q)+"//"+Hex(<r>)->Str 4
+Str 4+" "+ToStr(100(P+Q)/<r>)+"%"->Str 4
+Str 4+" +"+Hex(Q)+"//"+Hex(Dim List 1)->Str 4
+'_LocateYX _@64-7,0,_Str _4,R
+Text @64-6,1,Str 4,R
 Return 
