@@ -6,7 +6,7 @@ IsExist("8PX.hzk")->Theta
 32->O
 1024->Dim List 3.L
 (-)1->List 3[0]
-"LunarReader V1.5.2"
+"LunarReader V1.5.9"
 "Code:XChar-Ray"
 "by NWater"
 "ENTER FILE PATH:"
@@ -26,7 +26,7 @@ _ClrVram
 
 P<0 Or P>=<r>=>0->P'FILE SEEK POINT
 0->Q'TMP POINT
-(128/4)*(64/8)*4->Dim List 1.B
+0X1000->Dim List 1.B
 Load(Str 1,P)->List 1
 Do
  If P+Q>=<r>
@@ -145,6 +145,7 @@ Do
      8+Y->Y
     IfEnd
    WhileEnd
+   R-1->R
    Q-R->Q
    If Q<0
     Then 'P+Q_->_P
@@ -283,17 +284,33 @@ If (-)1=List 3[0]
  Then 0->List 3[0]
  0->J
  1->I
- _Rectangle 7,8,120,40,1,1,0
+ 0->R
+ _Rectangle 7,8,120,44,1,1,0
  LocateYX @12,9,"GENERATING TOC"
  LocateYX @20,9,"PLEASE WAIT..."
- While I<<r> And J<Dim List 3-1
-  LocateYX @28,9,Hex(I)+"//"+Hex(<r>)
-  Load(Str 1,I)->List 1
-  StrSrc($List 1,StrChar(0X0A,1))->K
-  If K>=0
+ Load(Str 1,I)->List 1
+ While I+R<<r> And J<Dim List 3-1
+  Text @28,10,Hex(I+R)+"//"+Hex(<r>)+"("+ToStr(J)+"//"+ToStr(Dim List 3)+")"
+  '_StrSrc(_$_List _1,_StrChar(_0X0A,1),R)_->_K
+  R->K
+  While List 1[K]<>0X0A And K+1<Dim List 1
+   K+1->K
+  WhileEnd
+  If List 1[K]<>0X0A
    Then 
-   If K>Dim List 1-(64/4)
+   If K+1<Dim List 1
+    Then '_List _1[K+1]=0X0A_=>_K+1_->_K
+   ElseIf K-1>=0
+    List 1[K-1]=0X0A=>K-1->K
+   IfEnd
+  IfEnd
+  List 1[K]<>0X0A=>(-)1->K
+  If K>=0
+   Then K+1->K
+   If K+8>=Dim List 1
     Then I+K-1->I
+    0->R
+    Load(Str 1,I)->List 1
    Else MOD(List 1[K+1],0X100)->B
     0->X
     B=0XA0+21 And List 1[K+2]=0XA0+58=>1->X'Nth
@@ -306,13 +323,34 @@ If (-)1=List 3[0]
      Then 
      1+J->J
      I+K+1->List 3[J]
-     I+K+2->I
-    Else I+K+1->I
+     K+3->R
+     If List 3[J-1]=List 3[J]
+      Then J-1->J
+      R+3->R
+     IfEnd
+    Else K+3->R
     IfEnd
    IfEnd
-  Else Dim List 1+I->I
+  Else 
+   Dim List 1+I->I
+   0->R
+   Load(Str 1,I)->List 1
+  IfEnd
+  If R>Dim List 1-64
+   Then I+R->I
+   0->R
+   Load(Str 1,I)->List 1
   IfEnd
  WhileEnd
+ _Rectangle 9,28,119,33,0,0,2
+ Text @34,10,"SORTING..."
+ List 3->List 2
+ ClrList 3
+ J+1->Dim List 3.L
+ For 0->I To J
+  List 2[I]->List 3[I]
+ Next
+ ClrList 2
 IfEnd
 0->I
 0->J
@@ -326,8 +364,14 @@ While A=(-)1
   Then (64/8-2)->J
   I+1->I
  IfEnd
+ If I+J>=Dim List 3
+  Then 0->J
+  Dim List 3-1->I
+ IfEnd
  MOD(I,Dim List 3)->I
  (64)->Dim List 2.B
+ _Rectangle 0,63-6,127,63,0,0,1
+ Text @63-5,1,"@"+ToStr(I+J)+"//"+ToStr(Dim List 3),R
  For 0->K To (64/8-2)
   _Rectangle 0,8K,127,8K+7,0,0,0
   I+K>=Dim List 3=>Next
@@ -359,6 +403,13 @@ K=37=>J+1->J
 K=38=>0->I~J
 K=31=>I+J->A
 K=47=>(-)2->A
+If K=27
+ Then 0->I
+ 0->J
+ While List 3[I]<P+Q And I<Dim List 3-1
+  1+I->I
+ WhileEnd
+IfEnd
 WhileEnd
 Load(Str 1,P)->List 1
 If A>=0
