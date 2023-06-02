@@ -5,7 +5,7 @@ IsExist("8PX.hzk")->Theta
 {8,Theta}->Dim Mat A.P
 32->O
 
-"LunarReader V1.4.11"
+"LunarReader V1.4.12"
 "Code:Sunloar"
 "by NWater"
 "ENTER FILE PATH:"
@@ -184,8 +184,12 @@ Lbl X
 P+Q->P
 ClrText
 FkeyMenu(1~6,"LunarReader by NWater")
-"This software is free software,licensed under GPLv3 or later."
-"Visit <http:////github.com//nwater23//LunarReader> for more info and updates."
+Text @16,0,"This software is free software,"
+Text @22,0,"licensedunderGPLv3orlater."
+Text @28,0,"Visit https:////github.com"
+Text @34,12,"//nwater23//LunarReader"
+Text @40,0,"for more info and updates."
+"Press [EXIT]..."
 Stop
 Return 
 
